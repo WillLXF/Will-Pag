@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		.form{
+			background: #000;
+			opacity: 0.7;
+			width: 500px;
+			margin: 0 auto;
+			color: #fff;
+			font-size: 16px;
+			padding: 20px;
+		}
+		.form .title{
+			font-size: 24px;
+		}
+		.form .select_group{
+			margin-top: 20px;
+		}
+		.form .select_group .select_group_item{
+			display: inline-block;
+		}
+		.form .select_group .select_group_item select{
+			height: 40px;
+			width: 120px;
+			font-size: 14px;
+		}
+		.form .detail{
+			margin-top: 30px;
+		}
+		.form .detail input{
+			border: 0;
+			outline: none;
+			height: 40px;
+			width: 300px;
+			padding: 0 10px;
+			font-size: 14px;
+		}
+		.form .btn{
+			background: orange;
+			height: 40px;
+			line-height: 40px;
+			width: 150px;
+			text-align: center;
+			color: #000;
+			font-size: 14px;
+			margin-top: 30px;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<div class="form">
+		<div class="title">请输入您的地址：</div>
+		<div class="select_group">
+			<div class="select_group_item" onchange="change(0)">省：
+				<select id="op">
+					<option value="-1">请选择</option>
+				</select>
+			</div>
+			<div class="select_group_item" onchange="change(1)">市：
+				<select id="city">
+					<option>请选择</option>
+				</select>
+			</div>
+			<div class="select_group_item">区：
+				<select id="area">
+					<option>请选择</option>
+				</select>
+			</div>
+		</div>
+		<div class="detail">详细地址：
+			<input placeholder="请输入详细地址"></input>
+		</div>
+		<div class="btn">提交</div>
+	</div>
+	<script type="text/javascript" src="./jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="./city.js"></script>
+	<script type="text/javascript">
+		// 初始化地址数组
+	 	var list = []
+	 	json.forEach(v => {
+	 		if (v.region_type == 1) {
+	 			v.child = []
+	 			json.forEach(vCity => {
+			 		if (vCity.region_type == 2 && vCity.parent_id == v.region_id ) {
+			 			vCity.child = []
+			 			json.forEach(vArea => {
+					 		if (vArea.region_type == 3 && vArea.parent_id == vCity.region_id ) {
+					 			vCity.child.push(vArea)
+					 		}
+					 	})
+			 			v.child.push(vCity)
+			 		}
+			 	})
+	 			list.push(v)
+	 		}
+	 	})
+
+	 	// 添加省份
+	 	list.forEach((v, k) => {
+	 		$('#op').append(`<option value="${k}">${v.region_name}</option>`)
+	 	})
+
+	 	// 下拉框值改变
+	 	function change(type) {
+	 		// 省改变
+	 		if (type == 0) {
+	 			$('#city').empty()
+	 			$('#city').append(`<option value="-1">请选择</option>`)
+	 			$('#area').empty()
+	 			$('#area').append(`<option value="-1">请选择</option>`)
+	 			if ($('#op').val() != -1) {
+	 				list[$('#op').val()].child.forEach((v, k) => {
+				 		$('#city').append(`<option value="${k}">${v.region_name}</option>`)
+				 	})
+	 			}
+	 		}
+	 		// 市改变
+	 		if (type == 1) {
+	 			$('#area').empty()
+	 			$('#area').append(`<option value="-1">请选择</option>`)
+	 			if ($('#city').val() != -1) {
+	 				list[$('#op').val()].child[$('#city').val()].child.forEach((v, k) => {
+				 		$('#area').append(`<option value="${k}">${v.region_name}</option>`)
+				 	})
+	 			}
+	 		}
+	 	}
+	</script>
+</body>
+</html>
